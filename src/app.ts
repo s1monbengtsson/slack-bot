@@ -13,8 +13,10 @@ import { messageToSend } from "./utils/messageToSend";
 import { Joke } from "./types/joke.types";
 import { Fact } from "./types/fact.types";
 config();
+import express from "express";
 
 const {
+	PORT,
 	SLACK_BOT_TOKEN,
 	SLACK_SIGNING_SECRET,
 	SLACK_APP_TOKEN,
@@ -25,8 +27,19 @@ const {
 	FACT_ENDPOINT,
 } = process.env;
 
+const app = express();
+const port = PORT || 4000;
+
+app.get("/", (req, res) => {
+	res.send("Hello world");
+});
+
+app.listen(port, () => {
+	console.log(`App started listening on port: ${port}`);
+});
+
 //initilize app
-const app = new App({
+const slackApp = new App({
 	token: SLACK_BOT_TOKEN,
 	signingSecret: SLACK_SIGNING_SECRET,
 	socketMode: true,
@@ -49,7 +62,7 @@ let birthdayMessageIsSentToday = false;
 let beerTimeMessageSent = false;
 
 (async () => {
-	await app.start();
+	await slackApp.start();
 	loop();
 })();
 
@@ -117,7 +130,7 @@ function loop() {
 }
 
 // listens and responds to slash commands
-app.command("/fact-me", async ({ ack, respond }) => {
+slackApp.command("/fact-me", async ({ ack, respond }) => {
 	try {
 		if (!FACT_BASE_URL || !FACT_ENDPOINT) return;
 
@@ -134,7 +147,7 @@ app.command("/fact-me", async ({ ack, respond }) => {
 	}
 });
 
-app.command("/joke", async ({ ack, respond }) => {
+slackApp.command("/joke", async ({ ack, respond }) => {
 	try {
 		if (!JOKE_BASE_URL || !JOKE_ENDPOINT) return;
 
@@ -175,7 +188,7 @@ async function sendBirthdayGreeting() {
 					? `${joke.setup}.. ${joke.delivery}`
 					: `${joke.joke}`;
 
-			return await app.client.chat.postMessage({
+			return await slackApp.client.chat.postMessage({
 				token: SLACK_BOT_TOKEN,
 				channel: SlackChannel.general,
 				text: messageToSend(MessageType.happyBirthday, user, jokeFormatted),
@@ -183,7 +196,7 @@ async function sendBirthdayGreeting() {
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				console.error("error:", error.message);
-				return await app.client.chat.postMessage({
+				return await slackApp.client.chat.postMessage({
 					token: SLACK_BOT_TOKEN,
 					channel: SlackChannel.slackbotBugs,
 					text: messageToSend(
@@ -194,7 +207,7 @@ async function sendBirthdayGreeting() {
 				});
 			}
 			console.error("error:", error);
-			return await app.client.chat.postMessage({
+			return await slackApp.client.chat.postMessage({
 				token: SLACK_BOT_TOKEN,
 				channel: SlackChannel.slackbotBugs,
 				text: messageToSend(MessageType.errorHappyBirthday, user),
@@ -205,14 +218,14 @@ async function sendBirthdayGreeting() {
 
 async function sendTimeForBeerMessage() {
 	try {
-		return await app.client.chat.postMessage({
+		return await slackApp.client.chat.postMessage({
 			token: SLACK_BOT_TOKEN,
 			channel: SlackChannel.general,
 			text: messageToSend(MessageType.beer),
 		});
 	} catch (error: unknown) {
 		console.error("error:", error);
-		return await app.client.chat.postMessage({
+		return await slackApp.client.chat.postMessage({
 			token: SLACK_BOT_TOKEN,
 			channel: SlackChannel.slackbotBugs,
 			text: messageToSend(MessageType.errorBeer),

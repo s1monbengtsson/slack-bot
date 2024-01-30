@@ -1,0 +1,16 @@
+{
+	"users": [
+		{
+			"name": "test test",
+			"birthdate": "2024-01-24"
+		},
+		{
+			"name": "test testsson",
+			"birthdate": "2024-01-24"
+		},
+		{
+			"name": "lol 5",
+			"birthdate": "2024-01-29"
+		}
+	]
+}

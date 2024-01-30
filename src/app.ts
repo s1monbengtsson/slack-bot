@@ -72,8 +72,8 @@ function loop() {
 	setTimeout(async () => {
 		try {
 			if (!BASE_URL) return;
-			users = await getUsers();
-			console.log("users:", users);
+			// users = await getUsers();
+			// console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);

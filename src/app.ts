@@ -7,7 +7,7 @@ import {
 import { App } from "@slack/bolt";
 import { config } from "dotenv";
 import { User } from "./types/person.types";
-import { get } from "./api/slackBotAPI";
+import { get, getUsers } from "./api/slackBotAPI";
 import { MessageType, SlackChannel } from "./enums/enums";
 import { messageToSend } from "./utils/messageToSend";
 import { Joke } from "./types/joke.types";
@@ -72,7 +72,8 @@ function loop() {
 	setTimeout(async () => {
 		try {
 			if (!BASE_URL) return;
-			users = await get<User[]>(BASE_URL, "users");
+			users = await getUsers();
+			console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);

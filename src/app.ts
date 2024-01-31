@@ -114,6 +114,8 @@ function loop() {
 		console.log("today:", today);
 		console.log("message is sent today?", birthdayMessageIsSentToday);
 		console.log("birthday today?", birthdayToday);
+		console.log("hour on server:", hour);
+		console.log("hour of notification:", HOUR_OF_BIRTHDAY_NOTIFICATION);
 
 		if (previousDay !== today) {
 			previousDay = today;

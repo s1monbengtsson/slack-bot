@@ -80,9 +80,10 @@ let beerTimeMessageSent = false;
 // keeps the app up and running
 function loop() {
 	const hour = Number(
-		new Intl.DateTimeFormat("se-SE", { hour: "numeric" }).format(
-			new Date(Date.now())
-		)
+		new Intl.DateTimeFormat("se-SE", {
+			hour: "numeric",
+			timeZone: "Europe/Stockholm",
+		}).format(new Date(Date.now()))
 	);
 	const today = Number(
 		new Intl.DateTimeFormat("se-SE", { day: "numeric" }).format(

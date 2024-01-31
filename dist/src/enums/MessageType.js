@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MessageType = exports.SlackChannel = void 0;
-var SlackChannel;
-(function (SlackChannel) {
-    SlackChannel["general"] = "general";
-    SlackChannel["slackbotBugs"] = "C06FPAZJYJY";
-})(SlackChannel || (exports.SlackChannel = SlackChannel = {}));
+exports.MessageType = void 0;
 var MessageType;
 (function (MessageType) {
     MessageType["happyBirthday"] = "happyBirthday";
@@ -13,4 +8,4 @@ var MessageType;
     MessageType["errorHappyBirthday"] = "errorHappyBirthday";
     MessageType["errorBeer"] = "errorBeer";
 })(MessageType || (exports.MessageType = MessageType = {}));
-//# sourceMappingURL=enums.js.map
+//# sourceMappingURL=MessageType.js.map

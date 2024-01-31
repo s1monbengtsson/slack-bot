@@ -1,4 +1,4 @@
-import { MessageType } from "../enums/enums";
+import { MessageType } from "../enums/MessageType";
 import { User } from "../types/person.types";
 
 export function messageToSend(

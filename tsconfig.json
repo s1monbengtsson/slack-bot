@@ -14,6 +14,6 @@
 	},
 	"include": [
 		"src/**/*.ts", // include TypeScript files
-		"src/users.json" // include users.json file
+		"users.json" // include users.json file
 	]
 }

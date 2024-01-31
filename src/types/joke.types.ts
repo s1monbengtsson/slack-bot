@@ -1,4 +1,4 @@
-export type Joke = {
+export type JokeResponse = {
 	error: boolean;
 	category: string;
 	type: string;

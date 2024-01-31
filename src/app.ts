@@ -1,19 +1,22 @@
 import {
 	DAY_OF_BEER,
+	FILE_PATH,
 	HOUR_OF_BEER_NOTIFICATION,
 	HOUR_OF_BIRTHDAY_NOTIFICATION,
 	TIMER_DURATION,
-} from "./constants";
+} from "./constants/constants";
 import { App } from "@slack/bolt";
 import { config } from "dotenv";
 import { User } from "./types/person.types";
-import { get, getUsers } from "./api/slackBotAPI";
-import { MessageType, SlackChannel } from "./enums/enums";
+import { get } from "./api/slackBotAPI";
 import { messageToSend } from "./utils/messageToSend";
-import { Joke } from "./types/joke.types";
+import { JokeResponse } from "./types/joke.types";
 import { Fact } from "./types/fact.types";
 config();
 import express, { Request, Response } from "express";
+import { readFile } from "./utils/readFile";
+import { SlackChannel } from "./enums/SlackChannel";
+import { MessageType } from "./enums/MessageType";
 
 const {
 	PORT,
@@ -26,6 +29,7 @@ const {
 	FACT_ENDPOINT,
 } = process.env;
 
+// set up and start express server (solely for deployment purposes)
 const app = express();
 const port = PORT || 10000;
 
@@ -61,6 +65,7 @@ const todayFormatted = new Intl.DateTimeFormat("se-SE").format(
 	new Date(Date.now())
 );
 
+// declare global variables
 let users: User[] = [];
 let usersWithBirthdayToday: User[] = [];
 let birthdayToday = false;
@@ -72,6 +77,7 @@ let previousDay = Number(
 let birthdayMessageIsSentToday = false;
 let beerTimeMessageSent = false;
 
+// start the slack app and get the loop running
 (async () => {
 	await slackApp.start();
 	loop();
@@ -79,7 +85,7 @@ let beerTimeMessageSent = false;
 
 // keeps the app up and running
 function loop() {
-	const hour = Number(
+	const currentHour = Number(
 		new Intl.DateTimeFormat("se-SE", {
 			hour: "numeric",
 			timeZone: "Europe/Stockholm",
@@ -95,29 +101,22 @@ function loop() {
 
 	// executes every TIMER_DURATION minutes
 	setTimeout(async () => {
-		console.log("hbds today:", usersWithBirthdayToday);
 		try {
-			users = await getUsers();
+			// extract the users from the json file
+			users = await readFile(FILE_PATH);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);
 
+			// check if some one has their birthday today
 			birthdayToday = !!usersWithBirthdayToday.length;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				console.log("error instance:", error.message);
 			}
-			console.error("error:", error);
 		}
 
-		console.log("hbds today:", usersWithBirthdayToday);
-		console.log("previous day:", previousDay);
-		console.log("today:", today);
-		console.log("message is sent today?", birthdayMessageIsSentToday);
-		console.log("birthday today?", birthdayToday);
-		console.log("hour on server:", hour);
-		console.log("hour of notification:", HOUR_OF_BIRTHDAY_NOTIFICATION);
-
+		// conditionals to decide on which actions will be taken
 		if (previousDay !== today) {
 			previousDay = today;
 			birthdayMessageIsSentToday = false;
@@ -127,14 +126,14 @@ function loop() {
 		if (
 			!beerTimeMessageSent &&
 			weekdayNumber === DAY_OF_BEER &&
-			hour === HOUR_OF_BEER_NOTIFICATION
+			currentHour === HOUR_OF_BEER_NOTIFICATION
 		) {
 			sendTimeForBeerMessage();
 			beerTimeMessageSent = true;
 		}
 		if (
 			!birthdayMessageIsSentToday &&
-			hour === HOUR_OF_BIRTHDAY_NOTIFICATION &&
+			currentHour === HOUR_OF_BIRTHDAY_NOTIFICATION &&
 			birthdayToday
 		) {
 			sendBirthdayGreeting();
@@ -148,7 +147,7 @@ function loop() {
 	}, TIMER_DURATION);
 }
 
-// listens and responds to slash commands
+// listens and responds to slash commands in slack
 slackApp.command("/fact-me", async ({ ack, respond }) => {
 	try {
 		if (!FACT_BASE_URL || !FACT_ENDPOINT) return;
@@ -170,16 +169,16 @@ slackApp.command("/joke", async ({ ack, respond }) => {
 	try {
 		if (!JOKE_BASE_URL || !JOKE_ENDPOINT) return;
 
-		const joke = await get<Joke>(JOKE_BASE_URL, JOKE_ENDPOINT);
+		const jokeResponse = await get<JokeResponse>(JOKE_BASE_URL, JOKE_ENDPOINT);
 		await ack();
 
 		const jokeFormatted =
-			joke.type === "twopart"
-				? `${joke.setup}.. ${joke.delivery}`
-				: `${joke.joke}`;
+			jokeResponse.type === "twopart"
+				? `${jokeResponse.setup}.. ${jokeResponse.delivery}`
+				: `${jokeResponse.joke}`;
 
 		await respond(
-			joke ? jokeFormatted : "I'm currenly out of jokes. Try me again!"
+			jokeResponse ? jokeFormatted : "I'm currenly out of jokes. Try me again!"
 		);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
@@ -198,7 +197,7 @@ async function sendBirthdayGreeting() {
 		try {
 			if (!JOKE_BASE_URL || !JOKE_ENDPOINT) return;
 
-			let joke = await get<Joke>(JOKE_BASE_URL, JOKE_ENDPOINT);
+			let joke = await get<JokeResponse>(JOKE_BASE_URL, JOKE_ENDPOINT);
 
 			if (!joke) return;
 
@@ -251,6 +250,3 @@ async function sendTimeForBeerMessage() {
 		});
 	}
 }
-
-// kolla efter best practices för node app
-// Implementera SRP i repot

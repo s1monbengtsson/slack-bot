@@ -158,7 +158,10 @@ slackApp.command("/fact-me", async ({ ack, respond }) => {
 		await respond(
 			randomFact ? randomFact.text : "Could not find a random fact.."
 		);
-		console.info({ success: true, command: "/fact-me" });
+		console.info("Successfully ran slash command", {
+			status: "success",
+			command: "/fact-me",
+		});
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error("/fact-me failed:", error.message);
@@ -182,7 +185,10 @@ slackApp.command("/joke", async ({ ack, respond }) => {
 		await respond(
 			jokeResponse ? jokeFormatted : "I'm currenly out of jokes. Try me again!"
 		);
-		console.info({ success: true, command: "/joke" });
+		console.info("Successfully ran slash command", {
+			status: "success",
+			command: "/joke",
+		});
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error("/joke failed:", error.message);

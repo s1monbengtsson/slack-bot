@@ -104,6 +104,7 @@ function loop() {
 		try {
 			// extract the users from the json file
 			users = await readFile(FILE_PATH);
+			console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);

@@ -13,14 +13,13 @@ import { messageToSend } from "./utils/messageToSend";
 import { Joke } from "./types/joke.types";
 import { Fact } from "./types/fact.types";
 config();
-import express from "express";
+import express, { Request, Response } from "express";
 
 const {
 	PORT,
 	SLACK_BOT_TOKEN,
 	SLACK_SIGNING_SECRET,
 	SLACK_APP_TOKEN,
-	BASE_URL,
 	JOKE_BASE_URL,
 	JOKE_ENDPOINT,
 	FACT_BASE_URL,
@@ -30,8 +29,20 @@ const {
 const app = express();
 const port = PORT || 10000;
 
-app.get("/", (req, res) => {
-	res.send("Hello world");
+app.get("/", (req: Request, res: Response) => {
+	res.send({
+		success: "true",
+		usage: [
+			{
+				slackCommand: "/fact-me",
+				description: "Replies with a random fact",
+			},
+			{
+				slackCommand: "/joke",
+				description: "Replies with a joke",
+			},
+		],
+	});
 });
 
 app.listen(port, () => {
@@ -83,10 +94,10 @@ function loop() {
 
 	// executes every TIMER_DURATION minutes
 	setTimeout(async () => {
+		console.log("hbds today:", usersWithBirthdayToday);
 		try {
-			if (!BASE_URL) return;
-			// users = await getUsers();
-			// console.log("users:", users);
+			users = await getUsers();
+			console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);

@@ -9,7 +9,7 @@ export const get = async <T>(baseUrl: string, endpoint: string) => {
 
 export const getUsers = async (): Promise<User[]> => {
 	return new Promise((resolve, reject) => {
-		const filePath = path.join(__dirname, "../../users.json");
+		const filePath = path.join(__dirname, "../users.json");
 		fs.readFile(filePath, "utf8", (err, data) => {
 			if (err) {
 				reject(err);

@@ -11,5 +11,9 @@
 		"sourceMap": true,
 		"rootDir": ".",
 		"outDir": "dist"
-	}
+	},
+	"include": [
+		"src/**/*.ts", // include TypeScript files
+		"src/users.json" // include users.json file
+	]
 }

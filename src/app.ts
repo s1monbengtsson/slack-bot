@@ -97,7 +97,6 @@ function loop() {
 		console.log("hbds today:", usersWithBirthdayToday);
 		try {
 			users = await getUsers();
-			console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);
@@ -109,6 +108,12 @@ function loop() {
 			}
 			console.error("error:", error);
 		}
+
+		console.log("hbds today:", usersWithBirthdayToday);
+		console.log("previous day:", previousDay);
+		console.log("today:", today);
+		console.log("message is sent today?", birthdayMessageIsSentToday);
+		console.log("birthday today?", birthdayToday);
 
 		if (previousDay !== today) {
 			previousDay = today;

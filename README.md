@@ -40,4 +40,5 @@
 
 ## Deploy
 
-Pushes to main will be automatically deployed to production
+- Host: render.com
+- Pushing to main will be automatically trigger a deployment to production

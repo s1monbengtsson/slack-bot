@@ -104,7 +104,6 @@ function loop() {
 		try {
 			// extract the users from the json file
 			users = await readFile(FILE_PATH);
-			console.log("users:", users);
 			usersWithBirthdayToday = users?.filter(
 				user => user.birthdate === todayFormatted
 			);
@@ -113,7 +112,7 @@ function loop() {
 			birthdayToday = !!usersWithBirthdayToday.length;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				console.log("error instance:", error.message);
+				console.error("error instance:", error.message);
 			}
 		}
 
@@ -141,8 +140,6 @@ function loop() {
 			birthdayMessageIsSentToday = true;
 		}
 
-		console.log("still running");
-
 		// keep the function running
 		loop();
 	}, TIMER_DURATION);
@@ -164,9 +161,17 @@ slackApp.command("/fact-me", async ({ ack, respond }) => {
 		});
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			console.error("/fact-me failed:", error.message);
+			console.error("Slash command failed", {
+				status: "fail",
+				command: "/fact-me",
+				message: error.message,
+			});
 		}
-		console.error("/fact-me failed:", error);
+		console.error("Slash command failed", {
+			status: "fail",
+			command: "/fact-me",
+			message: error,
+		});
 	}
 });
 
@@ -191,9 +196,17 @@ slackApp.command("/joke", async ({ ack, respond }) => {
 		});
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			console.error("/joke failed:", error.message);
+			console.error("Slash command failed", {
+				status: "fail",
+				command: "/joke",
+				message: error.message,
+			});
 		}
-		console.error("/joke failed:", error);
+		console.error("Slash command failed", {
+			status: "fail",
+			command: "/joke",
+			message: error,
+		});
 	}
 });
 

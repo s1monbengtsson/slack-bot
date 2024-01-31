@@ -158,11 +158,12 @@ slackApp.command("/fact-me", async ({ ack, respond }) => {
 		await respond(
 			randomFact ? randomFact.text : "Could not find a random fact.."
 		);
+		console.info({ success: true, command: "/fact-me" });
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			console.error("errorInstance:", error.message);
+			console.error("/fact-me failed:", error.message);
 		}
-		console.error("error:", error);
+		console.error("/fact-me failed:", error);
 	}
 });
 
@@ -181,11 +182,12 @@ slackApp.command("/joke", async ({ ack, respond }) => {
 		await respond(
 			jokeResponse ? jokeFormatted : "I'm currenly out of jokes. Try me again!"
 		);
+		console.info({ success: true, command: "/joke" });
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			console.error("errorInstance:", error.message);
+			console.error("/joke failed:", error.message);
 		}
-		console.error("error:", error);
+		console.error("/joke failed:", error);
 	}
 });
 
